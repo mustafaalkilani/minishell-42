@@ -172,6 +172,6 @@ All code in this repository was written, understood, and is defendable by us. AI
 ## Authors
 
 - **malkilan** — Mustafa Alkilani
-- **rabdalqa**
+- **rabdalqa** — Roa'A Abdalqader
 
 42 Amman · cursus · subject *Minishell — As beautiful as a shell* (v10.0).
