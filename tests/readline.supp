@@ -1,0 +1,38 @@
+# readline and ncurses allocate buffers at first use and never free them.
+# They are not our leaks and the subject explicitly excludes them, but they
+# would otherwise drown out real reports, so they are suppressed by library.
+{
+   readline-still-reachable
+   Memcheck:Leak
+   match-leak-kinds: reachable,definite,indirect,possible
+   ...
+   obj:*/libreadline.so*
+}
+{
+   readline-add-history
+   Memcheck:Leak
+   match-leak-kinds: reachable,definite,indirect,possible
+   ...
+   fun:add_history
+}
+{
+   readline-entry
+   Memcheck:Leak
+   match-leak-kinds: reachable,definite,indirect,possible
+   ...
+   fun:readline
+}
+{
+   ncurses-tgetent
+   Memcheck:Leak
+   match-leak-kinds: reachable,definite,indirect,possible
+   ...
+   obj:*/libtinfo.so*
+}
+{
+   ncurses-lib
+   Memcheck:Leak
+   match-leak-kinds: reachable,definite,indirect,possible
+   ...
+   obj:*/libncurses*.so*
+}
