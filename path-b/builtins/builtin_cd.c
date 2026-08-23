@@ -71,10 +71,28 @@ static char	*resolve_target(char **argv, t_shell *sh)
 	return (argv[1]);
 }
 
+/* Actually walks into target and records the move in $PWD / $OLDPWD.
+** Split out of builtin_cd so the option/argument parsing above and the
+** noop cases below stay under the norm's per-function line limit. */
+static int	cd_perform(char *target, t_shell *sh)
+{
+	char	*old;
+
+	old = getcwd(NULL, 0);
+	if (chdir(target) != 0)
+	{
+		shell_error("cd", target, strerror(errno));
+		free(old);
+		return (1);
+	}
+	update_pwd_vars(sh, old);
+	free(old);
+	return (EXIT_OK);
+}
+
 int	builtin_cd(char **argv, t_shell *sh)
 {
 	char	*target;
-	char	*old;
 
 	if (argv[1] && !ft_strncmp(argv[1], "--", 3))
 		argv++;
@@ -88,14 +106,7 @@ int	builtin_cd(char **argv, t_shell *sh)
 	target = resolve_target(argv, sh);
 	if (!target)
 		return (1);
-	old = getcwd(NULL, 0);
-	if (chdir(target) != 0)
-	{
-		shell_error("cd", target, strerror(errno));
-		free(old);
-		return (1);
-	}
-	update_pwd_vars(sh, old);
-	free(old);
-	return (EXIT_OK);
+	if (target[0] == '\0')
+		return (EXIT_OK);
+	return (cd_perform(target, sh));
 }

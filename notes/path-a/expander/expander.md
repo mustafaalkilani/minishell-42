@@ -1,8 +1,8 @@
 # expander.c
 
-This is the core of the EXPAND stage, the third step of the pipeline `read line -> LEX -> EXPAND -> PARSE -> EXECUTE`. It walks every `T_WORD` token produced by the lexer, copies literal runs through unchanged and substitutes `$VAR` / `$?` where the quote metadata says a `$` is live, building both the expanded text and the parallel split mask. It then hands the result to `split_token` so one word can become several argv entries. It also exposes `expand_word`, the single entry point path-b uses to expand heredoc bodies.
+This is the core of the EXPAND stage, the third step of the pipeline `read line -> LEX -> EXPAND -> PARSE -> EXECUTE`. It walks every `T_WORD` token produced by the lexer, copies literal runs through unchanged and substitutes `$VAR` / `${VAR}` / `$?` / `${?}` where the quote metadata says a `$` is live, building both the expanded text and the parallel split mask. It then hands the result to `split_token` so one word can become several argv entries. It also exposes `expand_word`, the single entry point path-b uses to expand heredoc bodies.
 
-The file relies on three things it does not implement itself: `var_name_len` / `var_lookup` / `exp_append` (in `expander_utils.c`), `tilde_prefix` / `is_quote_prefix` (in `expander_prefix.c`) and `split_token` (in `expander_split.c`).
+The file relies on three things it does not implement itself: `var_name_len` / `var_lookup` / `exp_append` (in `expander_utils.c`), `tilde_prefix` / `is_quote_prefix` / `append_braced` (in `expander_prefix.c`) and `split_token` (in `expander_split.c`).
 
 ## Walkthrough
 
@@ -82,10 +82,15 @@ if (value[*i + 1] == '?')
 `$?` is handled here rather than through the environment because it is shell state, not an env variable — it never appears in `env` output. `*i += 2` consumes `$` and `?`. `ft_itoa` allocates and `exp_append` consumes it. The `return (exp_append(...))` on a `void` function is a Norminette-friendly idiom for "do this and return", not a value return.
 
 ```c
-*i += append_named(e, value + *i, quotes + *i, flag);
+if (value[*i + 1] == '{')
+    *i += append_braced(e, value + *i, quotes + *i, flag);
+else
+    *i += append_named(e, value + *i, quotes + *i, flag);
 ```
 
-The rebase described above. `*i` is advanced by exactly what `append_named` reports it consumed, keeping `i` and the two parallel arrays in lockstep.
+The dispatch. `${...}` and `$name` are the same lookup with different delimiters, so they share almost everything — same `flag`, same `var_lookup`, same "unset expands to empty" contract — and differ only in how the name is delimited. The check on `value[*i + 1]` is a single character read; the actual measurement (is the closing `}` where we expect it? is the name valid?) happens inside `append_braced` and is delegated to `braced_name_len`, so `append_var` stays a dispatcher and does not learn how braces work. The rebase is identical to `append_named`'s: index 0 is the `$` inside the callee, so both helpers use the same "skip 1 for the `$`" arithmetic and the same "return count including the `$`" contract.
+
+Ordering matters here too. `is_quote_prefix` is checked first, so `${...}` never falls into the `$"..."` path — but as a defence against a hypothetical future rearrangement, `{` is not a quote delimiter, so it can never have `Q_BREAK` after the `$` and `is_quote_prefix` returns 0 for a real brace form regardless. The `$?` branch is also checked before this because `value[*i + 1]` would be `?` and we want to hit the fast path; `${?}` is handled inside `append_braced` via `braced_name_len`'s sentinel return.
 
 ### `static t_exp expand_masked(const char *value, const char *quotes, t_shell *sh, int tilde)`
 

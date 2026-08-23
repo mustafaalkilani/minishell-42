@@ -38,7 +38,7 @@ It changes to the project root first (`cd "$(dirname "$0")/.."`), so it works
 from any directory. At the end it prints either the list of failed stage names
 or `all stages passed`, and exits non-zero if anything failed.
 
-## `tests/edges.sh` — differential testing against bash, 114 cases
+## `tests/edges.sh` — differential testing against bash, 125 cases
 
 The main correctness suite. Its method is simple and hard to argue with: feed
 **the same script** to `./minishell` and to `/bin/bash`, and require that they
@@ -50,14 +50,14 @@ under test, from inside a fresh temporary directory that is wiped between
 runs, so a test that creates files cannot affect the next one. It captures
 three things: stdout, the exit code, and whether stderr was non-empty.
 
-The 114 cases are grouped into seven sections:
+The 125 cases are grouped into seven sections:
 
 | Section | Cases | Examples of what it pins down |
 | --- | --- | --- |
 | quoting | 9 | `''` kept as an argument, adjacent quotes gluing into one word, `'$HOME'` staying literal, a quoted `\|` not being an operator |
-| variable expansion | 16 | unset variables vanishing vs. keeping the field when quoted, `$?` after true/false/missing command, word splitting of `$S` vs `"$S"` |
-| builtins | 28 | `echo -nnn`, `cd -`, `cd --`, `export A+=2`, `export 1BAD=x`, `exit 300` wrapping modulo 256, `exit abc` |
-| redirections | 20 | append vs. truncate, `> f1 > f2` creating both but writing to the last, heredocs with and without expansion, quoted delimiters |
+| variable expansion | 27 | unset variables vanishing vs. keeping the field when quoted, `$?` after true/false/missing command, word splitting of `$S` vs `"$S"`, the braced `${VAR}` form matching `$VAR` in every quoting context |
+| builtins | 37 | `echo -nnn`, `cd -`, `cd --`, `cd ""` as a silent no-op, `export A+=2`, `export 1BAD=x`, `exit 300` wrapping modulo 256, `exit abc` |
+| redirections | 22 | append vs. truncate, `> f1 > f2` creating both but writing to the last, heredocs with and without expansion, quoted delimiters |
 | pipes | 11 | exit code coming from the last stage, builtins in the middle of a pipeline, `cd` in a pipe not moving the shell, `yes \| head` |
 | syntax errors | 10 | leading/trailing pipes, `> >`, unclosed quotes, and whitespace-only lines *not* being errors |
 | command resolution | 9 | absolute paths, directories as commands, permission denied, `unset PATH` falling back to the cwd, an empty `PATH` entry |
@@ -251,7 +251,7 @@ non-perfect score there is informative rather than a build failure. Our own
 | `bash tests/run-all.sh` | Everything, including valgrind |
 | `bash tests/run-all.sh quick` | Everything except valgrind |
 | `bash tests/norm.sh` | Norminette, the global count, the forbidden-function scan |
-| `bash tests/edges.sh` | The 114 differential cases against bash |
+| `bash tests/edges.sh` | The 125 differential cases against bash |
 | `python3 tests/signals.py` | The 12 interactive pty cases |
 | `bash tests/leaks.sh` | The 20 valgrind scenarios |
 

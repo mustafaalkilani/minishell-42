@@ -129,9 +129,9 @@ status themselves.
 | [path-a/parser/parser.md](path-a/parser/parser.md) | `path-a/parser/parser.c` | `parse`, the pipe/word step loop, `syntax_error` and `free_cmds` |
 | [path-a/parser/parser_redir.md](path-a/parser/parser_redir.md) | `path-a/parser/parser_redir.c` | Building `t_redir` nodes, including `quoted_delim` for heredocs |
 | [path-a/parser/parser_utils.md](path-a/parser/parser_utils.md) | `path-a/parser/parser_utils.c` | `t_cmd` allocation, growing `argv`, and `free_redirs` closing heredoc fds |
-| [path-a/expander/expander.md](path-a/expander/expander.md) | `path-a/expander/expander.c` | `expand`, `expand_word`, and the `$`-substitution walk that builds text and mask together |
+| [path-a/expander/expander.md](path-a/expander/expander.md) | `path-a/expander/expander.c` | `expand`, `expand_word`, and the `$`-substitution walk that builds text and mask together, including the `${VAR}` / `$VAR` dispatch |
 | [path-a/expander/expander_split.md](path-a/expander/expander_split.md) | `path-a/expander/expander_split.c` | Field splitting driven by the mask, and splicing extra tokens into the list |
-| [path-a/expander/expander_prefix.md](path-a/expander/expander_prefix.md) | `path-a/expander/expander_prefix.c` | Tilde expansion and the `$"..."` quote-prefix rule |
+| [path-a/expander/expander_prefix.md](path-a/expander/expander_prefix.md) | `path-a/expander/expander_prefix.c` | Tilde expansion, the `$"..."` quote-prefix rule, and the `${NAME}` / `${?}` brace form |
 | [path-a/expander/expander_utils.md](path-a/expander/expander_utils.md) | `path-a/expander/expander_utils.c` | Variable name scanning, `$?` lookup, and the `join_free`/`pad_new`/`exp_append` allocation core |
 
 ### path-b: executor, builtins, env, redirections, signals
@@ -152,7 +152,7 @@ status themselves.
 | [path-b/env/env_export.md](path-b/env/env_export.md) | `path-b/env/env_export.c` | Flattening back to `char **` for `execve`, identifier validation, and `+=` |
 | [path-b/builtins/builtin_dispatch.md](path-b/builtins/builtin_dispatch.md) | `path-b/builtins/builtin_dispatch.c` | `is_builtin` and `run_builtin`, the single entry point to all seven |
 | [path-b/builtins/builtin_echo.md](path-b/builtins/builtin_echo.md) | `path-b/builtins/builtin_echo.c` | `echo` and the stacked `-n` flag rules |
-| [path-b/builtins/builtin_cd.md](path-b/builtins/builtin_cd.md) | `path-b/builtins/builtin_cd.c` | `cd`, `HOME`, `cd -`, and updating `PWD`/`OLDPWD` |
+| [path-b/builtins/builtin_cd.md](path-b/builtins/builtin_cd.md) | `path-b/builtins/builtin_cd.c` | `cd`, `HOME`, `cd -`, `cd ""` as a no-op, and updating `PWD`/`OLDPWD` |
 | [path-b/builtins/builtin_pwd.md](path-b/builtins/builtin_pwd.md) | `path-b/builtins/builtin_pwd.c` | `pwd` via `getcwd` |
 | [path-b/builtins/builtin_env.md](path-b/builtins/builtin_env.md) | `path-b/builtins/builtin_env.c` | `env` printing only variables that have a value |
 | [path-b/builtins/builtin_export.md](path-b/builtins/builtin_export.md) | `path-b/builtins/builtin_export.c` | `export` with arguments, validation, and `+=` |

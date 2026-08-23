@@ -49,3 +49,51 @@ int	is_quote_prefix(const char *quotes, size_t i)
 		return (0);
 	return ((quotes[i + 1] & Q_BREAK) != 0);
 }
+
+/* Length of the identifier inside ${...}. Zero on any malformed brace:
+** an empty or invalid name, or one that does not run right up to the
+** closing }. ${?} is signalled by returning 1 while value[2] is '?',
+** because $? is not a real identifier — the caller checks value[2]. */
+int	braced_name_len(const char *value, const char *quotes)
+{
+	int	len;
+
+	if (value[2] == '?' && value[3] == '}')
+		return (1);
+	len = var_name_len(value + 2, quotes + 2);
+	if (len == 0 || value[2 + (size_t)len] != '}')
+		return (0);
+	return (len);
+}
+
+/* Consumes ${NAME} and returns how many characters were read. Malformed
+** braces (empty, no closing }, name that stops short of the }) fall back
+** to leaving the $ literal, same as $ before an invalid identifier.
+** ${?} is treated as $? because braced_name_len returned 1 for it. */
+size_t	append_braced(t_exp *e, const char *value, const char *quotes,
+		char flag)
+{
+	int		len;
+	char	*name;
+
+	len = braced_name_len(value, quotes);
+	if (len == 0)
+	{
+		exp_append(e, ft_strdup("$"), '0');
+		return (1);
+	}
+	if (value[2] == '?')
+	{
+		exp_append(e, ft_itoa(e->sh->last_status), flag);
+		return (4);
+	}
+	name = ft_substr(value, 2, (size_t)len);
+	if (!name)
+		exp_append(e, NULL, flag);
+	else
+	{
+		exp_append(e, var_lookup(name, e->sh), flag);
+		free(name);
+	}
+	return (3 + (size_t)len);
+}

@@ -1,13 +1,13 @@
 # builtin_cd.c
 
 Changes the shell's working directory and keeps `PWD` and `OLDPWD` in step with
-it. It resolves the three argument shapes bash supports for the mandatory part —
+it. It resolves the four argument shapes bash supports for the mandatory part —
 no argument means `$HOME`, `-` means `$OLDPWD` (and echoes where it went), `--`
-is the POSIX end-of-options marker that also means `$HOME` — rejects anything
-else that looks like a flag, then calls `chdir` and updates the environment only
-if that succeeded. Because a lone `cd` runs in the parent process (see
-`exec_line`), the directory change and the two variable updates persist to the
-next prompt.
+is the POSIX end-of-options marker that also means `$HOME`, and an empty-string
+operand (`cd ""`) is a silent no-op — rejects anything else that looks like a
+flag, then calls `chdir` and updates the environment only if that succeeded.
+Because a lone `cd` runs in the parent process (see `exec_line`), the directory
+change and the two variable updates persist to the next prompt.
 
 ## Walkthrough
 
@@ -140,6 +140,53 @@ read as a flag was already dealt with by `invalid_option` in the caller, so what
 arrives here is either an operand or something that survived a `--` shift.
 `CDPATH` is not implemented; it is not in the mandatory part.
 
+### `static int cd_perform(char *target, t_shell *sh)`
+
+The `chdir`-and-update half of `cd`, extracted from the main function so both
+sides stay under the norm's 25-line-per-function limit. Called only after
+`builtin_cd` has resolved the target and ruled out the two no-op cases
+(unresolved variable, empty-string operand).
+
+```c
+old = getcwd(NULL, 0);
+```
+Captured *before* the `chdir`, because afterwards the old path is unrecoverable.
+This is the only allocation in the function, and every path below frees it
+exactly once. `getcwd(NULL, 0)` is the GNU extension that mallocs a buffer of
+the right size, so there is no `PATH_MAX` truncation.
+
+```c
+if (chdir(target) != 0)
+{
+    shell_error("cd", target, strerror(errno));
+    free(old);
+    return (1);
+}
+```
+`chdir` is the single point of truth: no stat-then-chdir race, no manual
+permission check. `strerror(errno)` reproduces bash's wording exactly, so a
+missing directory prints `minishell: cd: /nope: No such file or directory` and a
+file prints `Not a directory`, both with status 1. `free(old)` on this path is
+what keeps the failure case leak-free — forgetting it is the classic `cd`
+valgrind report, because a shell session usually contains several failed `cd`s.
+
+`target` is *not* freed here, and must not be: it is borrowed from `argv` or from
+an env node (see `resolve_target`).
+
+```c
+update_pwd_vars(sh, old);
+free(old);
+return (EXIT_OK);
+```
+Environment update, then release. There is a subtle lifetime rule hiding here:
+when the command was `cd -`, `target` points at the `OLDPWD` node's `value`, and
+`update_pwd_vars` calls `env_set(&sh->env, "OLDPWD", old)` which **frees that
+very string**. So `target` is dangling from that call onwards. It is never read
+again — the last use was the `chdir`/error path above — so the code is correct,
+but the ordering is load-bearing and an evaluator poking at it deserves a
+straight answer. Moving the `shell_error` after `update_pwd_vars` would
+introduce a use-after-free.
+
 ### `int builtin_cd(char **argv, t_shell *sh)`
 
 ```c
@@ -196,46 +243,30 @@ if (!target)
 bash's status for every `cd` failure.
 
 ```c
-old = getcwd(NULL, 0);
+if (target[0] == '\0')
+    return (EXIT_OK);
 ```
-Captured *before* the `chdir`, because afterwards the old path is unrecoverable.
-This is the only allocation in the function, and every path below frees it
-exactly once.
+`cd ""` is a silent no-op. Bash treats an empty operand as "do nothing, return
+0" — `chdir("")` would fail with `ENOENT`, so without this line the shell would
+print `minishell: cd: : No such file or directory` and return 1, which diverges
+loudly from bash and shows up on real evaluators. Guarding it here rather than
+inside `cd_perform` keeps `cd_perform` focused on the "we really are moving"
+case and short enough to stay under the norm's line limit.
+
+Two subtleties. First, this check runs *after* `resolve_target`, so `cd -` where
+`OLDPWD` was `export`ed as `""` is also treated as a no-op — matching bash,
+which prints an empty line and returns 0 in the same situation. Second, this
+does not touch `OLDPWD`: because `chdir` never ran, there was no move to
+record. Bash agrees; a `cd ""` does not leak into the next `cd -`.
 
 ```c
-if (chdir(target) != 0)
-{
-    shell_error("cd", target, strerror(errno));
-    free(old);
-    return (1);
-}
+return (cd_perform(target, sh));
 ```
-`chdir` is the single point of truth: no stat-then-chdir race, no manual
-permission check. `strerror(errno)` reproduces bash's wording exactly, so a
-missing directory prints `minishell: cd: /nope: No such file or directory` and a
-file prints `Not a directory`, both with status 1. `free(old)` on this path is
-what keeps the failure case leak-free — forgetting it is the classic `cd`
-valgrind report, because a shell session usually contains several failed `cd`s.
-
-`target` is *not* freed here, and must not be: it is borrowed from `argv` or from
-an env node.
-
-```c
-update_pwd_vars(sh, old);
-free(old);
-return (EXIT_OK);
-```
-Environment update, then release. There is a subtle lifetime rule hiding here:
-when the command was `cd -`, `target` points at the `OLDPWD` node's `value`, and
-`update_pwd_vars` calls `env_set(&sh->env, "OLDPWD", old)` which **frees that
-very string**. So `target` is dangling from that call onwards. It is never read
-again — the last use was the `chdir`/error path above — so the code is correct,
-but the ordering is load-bearing and an evaluator poking at it deserves a
-straight answer. Moving the `shell_error` after `update_pwd_vars` would introduce
-a use-after-free.
-
-`EXIT_OK` is 0. `cd` returns 0 on success, 1 for every operand-level failure, and
-2 only from the option check at the top.
+Everything from here on lives in `cd_perform`: the `getcwd` capture, the
+`chdir`, and the `PWD` / `OLDPWD` update. `EXIT_OK` is 0. `cd` returns 0 on
+success and on the two no-op cases; 1 for too many arguments, for
+`HOME`/`OLDPWD` not set, and for any `chdir` failure; 2 only from the option
+check at the top.
 
 ## Things to be ready to explain
 
@@ -280,3 +311,19 @@ a use-after-free.
   false `OLDPWD`. `getcwd` asks the kernel. The trade-off is that `getcwd` fails
   if the current directory was deleted, in which case `OLDPWD` is left unchanged
   — bash falls back to `$PWD` there.
+
+- **Why is `cd ""` a no-op instead of an error?** Because that is what bash
+  does. `chdir("")` fails with `ENOENT`, so the natural behaviour would be to
+  print `cd: : No such file or directory` and return 1 — but bash short-circuits
+  this at the shell level and returns 0 silently, so we do too. The
+  `target[0] == '\0'` check sits between `resolve_target` and `cd_perform`
+  precisely because it is a shell-level rule that should never reach `chdir`.
+  Evaluators do test this one, and it costs two lines to get right.
+
+- **Why is `cd_perform` split out at all?** The `--` shift, `invalid_option`
+  guard, "too many arguments" check, `resolve_target` call, no-target guard, and
+  empty-string guard are already six branches — adding the four-line `getcwd` +
+  `chdir` + `update_pwd_vars` block on the end pushed the function past the
+  norm's 25-line-per-function limit. Splitting the "we know we're moving" half
+  into its own helper keeps both sides short, and reads more like two clean
+  paragraphs than one long one.

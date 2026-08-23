@@ -38,10 +38,10 @@ static size_t	append_named(t_exp *e, const char *value, const char *quotes,
 	return (1 + (size_t)len);
 }
 
-/* Consumes one $-expansion and advances i past it. Three cases: $? is
-** shell state, a valid name is looked up in env, and a $ before a quote
-** is dropped. What the variable produced is marked splittable only when
-** the $ itself was unquoted. */
+/* Consumes one $-expansion and advances i past it. Four cases: $? is
+** shell state, ${NAME} is a braced lookup, a bare name is looked up in
+** env, and a $ before a quote is dropped. What the variable produced is
+** marked splittable only when the $ itself was unquoted. */
 static void	append_var(t_exp *e, const char *value, size_t *i,
 		const char *quotes)
 {
@@ -60,7 +60,10 @@ static void	append_var(t_exp *e, const char *value, size_t *i,
 		*i += 2;
 		return (exp_append(e, ft_itoa(e->sh->last_status), flag));
 	}
-	*i += append_named(e, value + *i, quotes + *i, flag);
+	if (value[*i + 1] == '{')
+		*i += append_braced(e, value + *i, quotes + *i, flag);
+	else
+		*i += append_named(e, value + *i, quotes + *i, flag);
 }
 
 /* Walks the word copying literal runs and substituting variables. The

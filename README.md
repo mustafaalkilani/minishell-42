@@ -18,7 +18,7 @@ The goal is to gain hands-on, low-level knowledge of **processes**, **file descr
 - maintains a working command **history**,
 - searches for and launches the right executable using the `PATH` environment variable, or a relative/absolute path,
 - handles single (`'`) and double (`"`) quotes correctly,
-- expands environment variables (`$VAR`) and the special `$?` (last exit status),
+- expands environment variables (`$VAR`, `${VAR}`) and the special `$?` (last exit status),
 - implements the redirections `<`, `>`, `<<` (heredoc), and `>>`,
 - implements pipelines (`|`) of arbitrary length,
 - implements the built-ins `echo -n`, `cd`, `pwd`, `export`, `unset`, `env`, and `exit`,
@@ -103,8 +103,8 @@ Use `ctrl-C` to clear the current line and get a fresh prompt, and `ctrl-D` (on 
 - [x] Double quotes `"…"` (interpret only `$`)
 - [x] Redirections: `<`, `>`, `>>`, `<<` (heredoc — no history update required)
 - [x] Pipelines `cmd1 | cmd2 | …`
-- [x] Environment-variable expansion `$VAR`
-- [x] Special variable `$?` (exit status of the last foreground pipeline)
+- [x] Environment-variable expansion `$VAR` and `${VAR}` (braced form)
+- [x] Special variable `$?` (also as `${?}`, exit status of the last foreground pipeline)
 - [x] Signals: `ctrl-C`, `ctrl-D`, `ctrl-\` behave like in `bash`
 - [x] Built-ins: `echo -n`, `cd`, `pwd`, `export`, `unset`, `env`, `exit`
 - [x] At most **one** global variable, holding only a signal number

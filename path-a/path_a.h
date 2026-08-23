@@ -44,6 +44,7 @@ int				syntax_error(const char *near);
 /* expander internals */
 char			*var_lookup(const char *name, t_shell *sh);
 int				var_name_len(const char *s, const char *quotes);
+int				braced_name_len(const char *value, const char *quotes);
 char			*join_free(char *dst, char *src);
 char			*pad_new(size_t n, char flag);
 void			exp_append(t_exp *e, char *chunk, char flag);
@@ -51,5 +52,7 @@ int				split_token(t_token **tok, t_exp *e);
 size_t			tilde_prefix(t_exp *e, const char *value, const char *quotes,
 					int enabled);
 int				is_quote_prefix(const char *quotes, size_t i);
+size_t			append_braced(t_exp *e, const char *value, const char *quotes,
+					char flag);
 
 #endif
