@@ -42,9 +42,6 @@ void	free_cmds(t_cmd *cmds)
 	}
 }
 
-/* A pipe needs something on its left (command or redirection) and at
-** least one more token on its right, otherwise bash reports a syntax
-** error rather than waiting for more input as it does interactively. */
 static int	parse_pipe(t_cmd **cur, t_token **tokens)
 {
 	t_cmd	*next;
@@ -62,9 +59,6 @@ static int	parse_pipe(t_cmd **cur, t_token **tokens)
 	return (0);
 }
 
-/* An unquoted word that expanded to nothing disappears entirely, so
-** `echo $NOPE` runs echo with no arguments. A quoted one survives as an
-** empty string, so `echo "$NOPE"` prints a blank line. */
 static int	parse_step(t_cmd **cur, t_token **tokens)
 {
 	t_token	*tok;

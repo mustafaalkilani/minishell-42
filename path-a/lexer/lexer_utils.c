@@ -12,9 +12,6 @@
 
 #include "../path_a.h"
 
-/* Takes ownership of value and quotes, so every failure path frees them
-** here. That keeps the callers free of cleanup branching. quotes may be
-** NULL for operator tokens, which carry no quote metadata. */
 t_token	*token_new(t_token_type type, char *value, char *quotes)
 {
 	t_token	*tok;

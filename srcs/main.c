@@ -22,9 +22,6 @@ static void	shell_init(t_shell *sh, char **envp)
 	sh->current_line = NULL;
 }
 
-/* Runs the whole path-a pipeline: text -> tokens -> commands -> expanded.
-** Any stage returning NULL is a syntax error that has already printed its
-** own message, so we only have to propagate the failure. */
 static t_cmd	*build_cmds(char *line, t_shell *sh)
 {
 	t_token	*tokens;
@@ -43,8 +40,6 @@ static t_cmd	*build_cmds(char *line, t_shell *sh)
 	return (cmds);
 }
 
-/* Blank lines are filtered first, so a NULL from build_cmds can only mean
-** a syntax error, which bash reports as status 2. */
 static void	process_line(char *line, t_shell *sh)
 {
 	t_cmd	*cmds;
@@ -61,9 +56,6 @@ static void	process_line(char *line, t_shell *sh)
 	free_cmds(cmds);
 }
 
-/* readline() returning NULL means EOF (ctrl-D): bash prints "exit" and
-** leaves. A SIGINT caught while readline was waiting sets g_signal, and
-** bash records status 130 for that interrupted prompt. */
 static int	shell_loop(t_shell *sh)
 {
 	char	*line;

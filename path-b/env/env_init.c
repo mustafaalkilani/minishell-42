@@ -3,18 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   env_init.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: malkilan <malkilan@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rabdalqa <rabdalqa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/08/20 12:46:12 by malkilan          #+#    #+#             */
-/*   Updated: 2026/08/20 13:37:48 by malkilan         ###   ########.fr       */
+/*   Created: 2026/08/20 12:46:12 by rabdalqa          #+#    #+#             */
+/*   Updated: 2026/08/20 13:37:48 by rabdalqa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../path_b.h"
 
-/* value may be NULL, which is how `export X` (declared but unset) is
-** represented. Such a variable is listed by export but not exported to
-** child processes, matching bash. */
 t_env	*env_new(const char *key, const char *value)
 {
 	t_env	*node;
@@ -52,8 +49,6 @@ void	env_add_back(t_env **head, t_env *node)
 	cur->next = node;
 }
 
-/* Splits "KEY=VALUE" at the first '='. A missing '=' means the variable
-** is declared without a value. */
 int	env_set_from_string(t_env **env, const char *assignment)
 {
 	char	*eq;
@@ -74,9 +69,6 @@ int	env_set_from_string(t_env **env, const char *assignment)
 	return (rc);
 }
 
-/* Every shell records its nesting depth, so a shell started from another
-** shell must publish one more than it inherited. Without this, a child
-** process sees a stale SHLVL and `env` output diverges from bash. */
 static void	env_bump_shlvl(t_env **env)
 {
 	char	*old;

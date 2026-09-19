@@ -3,17 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_echo.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: malkilan <malkilan@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rabdalqa <rabdalqa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/08/20 15:13:29 by malkilan          #+#    #+#             */
-/*   Updated: 2026/08/21 00:34:03 by malkilan         ###   ########.fr       */
+/*   Created: 2026/08/20 15:13:29 by rabdalqa          #+#    #+#             */
+/*   Updated: 2026/08/21 00:34:03 by rabdalqa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../path_b.h"
 
-/* bash accepts -nnn and -n -n -n as a single suppression flag, but a
-** string like -na is a normal argument. Only a run of n's qualifies. */
 static int	is_n_flag(const char *arg)
 {
 	int	i;

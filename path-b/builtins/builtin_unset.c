@@ -3,19 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_unset.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: malkilan <malkilan@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rabdalqa <rabdalqa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/09/10 17:01:05 by malkilan          #+#    #+#             */
-/*   Updated: 2026/09/11 22:11:03 by malkilan         ###   ########.fr       */
+/*   Created: 2026/09/10 17:01:05 by rabdalqa          #+#    #+#             */
+/*   Updated: 2026/09/11 22:11:03 by rabdalqa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../path_b.h"
 
-/* A leading '-' on the first argument is read as an option flag, and we
-** support none, so bash aborts before unsetting anything and exits 2.
-** Later arguments are operands, and unset ignores malformed names, so
-** `unset A -x` succeeds silently. */
 static int	invalid_option(const char *arg)
 {
 	char	opt[3];
@@ -30,8 +26,6 @@ static int	invalid_option(const char *arg)
 	return (1);
 }
 
-/* Neither a missing name nor a malformed one is an error: bash skips
-** anything that could not name a variable and still reports success. */
 int	builtin_unset(char **argv, t_shell *sh)
 {
 	int	i;

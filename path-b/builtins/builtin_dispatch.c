@@ -3,17 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_dispatch.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: malkilan <malkilan@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rabdalqa <rabdalqa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/09/15 15:32:41 by malkilan          #+#    #+#             */
-/*   Updated: 2026/09/15 21:06:27 by malkilan         ###   ########.fr       */
+/*   Created: 2026/09/15 15:32:41 by rabdalqa          #+#    #+#             */
+/*   Updated: 2026/09/15 21:06:27 by rabdalqa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../path_b.h"
 
-/* Builtin names are matched case-sensitively: bash has no builtin ECHO,
-** so it would be looked up on PATH instead. */
 int	is_builtin(const char *name)
 {
 	if (!name)

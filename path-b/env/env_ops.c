@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_ops.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: malkilan <malkilan@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rabdalqa <rabdalqa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/09/08 17:27:47 by malkilan          #+#    #+#             */
-/*   Updated: 2026/09/09 19:17:19 by malkilan         ###   ########.fr       */
+/*   Created: 2026/09/08 17:27:47 by rabdalqa          #+#    #+#             */
+/*   Updated: 2026/09/09 19:17:19 by rabdalqa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,6 @@ t_env	*env_find(t_env *env, const char *key)
 	return (NULL);
 }
 
-/* Returns NULL both for "not present" and for "declared without value".
-** Callers treat both as empty, which is what bash does on expansion. */
 char	*env_get(t_env *env, const char *key)
 {
 	t_env	*node;
@@ -35,9 +33,6 @@ char	*env_get(t_env *env, const char *key)
 	return (node->value);
 }
 
-/* Overwrites an existing key in place so export order is preserved,
-** which matters because bash lists exported variables sorted but keeps
-** insertion order for `env`. */
 int	env_set(t_env **env, const char *key, const char *value)
 {
 	t_env	*node;

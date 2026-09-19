@@ -12,9 +12,6 @@
 
 #include "minishell.h"
 
-/* One byte at a time so nothing is buffered past the newline. A shared
-** buffer would be read into this process and then be missing from the
-** stdin a forked child inherits, for example during `cat << EOF`. */
 static char	*read_plain_line(void)
 {
 	char	*line;
@@ -40,9 +37,6 @@ static char	*read_plain_line(void)
 	return (line);
 }
 
-/* readline() gives history and line editing on a terminal, but it echoes
-** whatever it reads when stdin is a pipe, which would duplicate every
-** command into the output a test harness diffs against bash. */
 char	*read_input_line(const char *prompt)
 {
 	if (isatty(STDIN_FILENO))

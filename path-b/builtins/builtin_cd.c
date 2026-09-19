@@ -3,18 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_cd.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: malkilan <malkilan@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rabdalqa <rabdalqa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/08/27 18:53:29 by malkilan          #+#    #+#             */
-/*   Updated: 2026/08/30 00:12:05 by malkilan         ###   ########.fr       */
+/*   Created: 2026/08/27 18:53:29 by rabdalqa          #+#    #+#             */
+/*   Updated: 2026/08/30 00:12:05 by rabdalqa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../path_b.h"
 
-/* bash parses options with getopt, which stops at the first operand, so
-** only the leading argument can be a flag. We support none, and "-" and
-** "--" are not flags: the first means $OLDPWD, the second ends options. */
 static int	invalid_option(const char *arg)
 {
 	char	opt[3];
@@ -29,8 +26,6 @@ static int	invalid_option(const char *arg)
 	return (1);
 }
 
-/* Both directories come from getcwd() rather than $PWD, so a renamed or
-** symlinked path resolves the same way for OLDPWD and PWD. */
 static void	update_pwd_vars(t_shell *sh, char *old)
 {
 	char	*cwd;
@@ -45,9 +40,6 @@ static void	update_pwd_vars(t_shell *sh, char *old)
 	}
 }
 
-/* No argument means $HOME, and "-" means $OLDPWD. Both fail cleanly when
-** the variable is unset instead of dereferencing NULL. "cd -" also
-** echoes where it landed, which is how bash lets you see the jump. */
 static char	*resolve_target(char **argv, t_shell *sh)
 {
 	char	*var;
@@ -71,9 +63,6 @@ static char	*resolve_target(char **argv, t_shell *sh)
 	return (argv[1]);
 }
 
-/* Actually walks into target and records the move in $PWD / $OLDPWD.
-** Split out of builtin_cd so the option/argument parsing above and the
-** noop cases below stay under the norm's per-function line limit. */
 static int	cd_perform(char *target, t_shell *sh)
 {
 	char	*old;

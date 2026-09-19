@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_path.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: malkilan <malkilan@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rabdalqa <rabdalqa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/09/07 19:39:51 by malkilan          #+#    #+#             */
-/*   Updated: 2026/09/07 22:06:56 by malkilan         ###   ########.fr       */
+/*   Created: 2026/09/07 19:39:51 by rabdalqa          #+#    #+#             */
+/*   Updated: 2026/09/07 22:06:56 by rabdalqa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,6 @@ void	free_split(char **split)
 	free(split);
 }
 
-/* Directories carry the execute bit as "searchable", so access(X_OK)
-** alone would happily accept /usr/bin/. as a command and then fail in
-** execve with the wrong exit code. */
 static int	is_executable_file(const char *path)
 {
 	struct stat	st;
@@ -39,9 +36,6 @@ static int	is_executable_file(const char *path)
 	return (access(path, X_OK) == 0);
 }
 
-/* Walks PATH entries in order and returns the first executable match,
-** which is exactly how the shell picks between /usr/bin/ls and a local
-** override earlier in PATH. */
 static char	*search_in_path(char *cmd, char **paths)
 {
 	char	*full_path;
@@ -66,10 +60,6 @@ static char	*search_in_path(char *cmd, char **paths)
 	return (NULL);
 }
 
-/* A name containing '/' is used verbatim and never searched on PATH,
-** matching the shell rule that ./cmd and /bin/cmd bypass lookup. An
-** unset or empty PATH means one empty entry, and an empty entry names
-** the current directory, so `unset PATH; cd /bin; ls` still runs. */
 char	*resolve_command(char *cmd, t_shell *sh)
 {
 	char	*path_env;

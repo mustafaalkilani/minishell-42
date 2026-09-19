@@ -3,17 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   signals_child.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: malkilan <malkilan@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rabdalqa <rabdalqa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/08/29 22:10:24 by malkilan          #+#    #+#             */
-/*   Updated: 2026/08/30 02:13:32 by malkilan         ###   ########.fr       */
+/*   Created: 2026/08/29 22:10:24 by rabdalqa          #+#    #+#             */
+/*   Updated: 2026/08/30 02:13:32 by rabdalqa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../path_b.h"
 
-/* Children must die from ctrl-C like any normal program, so the
-** inherited handlers are reset to their defaults before execve. */
 void	signals_setup_child(void)
 {
 	struct sigaction	act;
@@ -26,9 +24,6 @@ void	signals_setup_child(void)
 	sigaction(SIGQUIT, &act, NULL);
 }
 
-/* While a foreground command runs, the shell itself must not react to
-** ctrl-C or ctrl-\: the signal belongs to the child. The shell prints
-** the newline afterwards based on the child's exit status instead. */
 void	signals_ignore(void)
 {
 	struct sigaction	act;

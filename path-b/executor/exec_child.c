@@ -3,17 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   exec_child.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: malkilan <malkilan@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rabdalqa <rabdalqa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/08/25 12:40:54 by malkilan          #+#    #+#             */
-/*   Updated: 2026/08/26 00:21:42 by malkilan         ###   ########.fr       */
+/*   Created: 2026/08/25 12:40:54 by rabdalqa          #+#    #+#             */
+/*   Updated: 2026/08/26 00:21:42 by rabdalqa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../path_b.h"
 
-/* execve only returns on failure, and the reason decides the exit code:
-** 126 means "found but cannot run", 127 means "not there at all". */
 static void	execve_failed(char *cmd)
 {
 	struct stat	st;
@@ -33,9 +31,6 @@ static void	execve_failed(char *cmd)
 	exit(EXIT_NOT_FOUND);
 }
 
-/* Runs inside the forked child and never returns. A builtin reached here
-** is one inside a pipeline: it runs in the child, so any environment it
-** changes is discarded, exactly like bash. */
 void	child_exec(t_cmd *cmd, t_shell *sh)
 {
 	char	*path;

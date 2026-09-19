@@ -23,9 +23,6 @@ static t_redir_type	redir_type_of(t_token_type type)
 	return (R_OUT);
 }
 
-/* quoted_delim only matters for heredocs: <<"EOF" and <<'EOF' keep the
-** body literal, while <<EOF expands variables inside it. heredoc_fd is
-** filled in later by path-b, before the pipeline forks. */
 static t_redir	*redir_new(t_token *op, t_token *target)
 {
 	t_redir	*redir;
@@ -66,8 +63,6 @@ int	cmd_add_redir(t_cmd *cmd, t_token *op, t_token *target)
 	return (0);
 }
 
-/* A redirection operator must be followed by a word. Anything else is
-** the classic "syntax error near unexpected token" bash reports. */
 int	parse_redir_step(t_cmd *cmd, t_token **tokens)
 {
 	t_token	*op;

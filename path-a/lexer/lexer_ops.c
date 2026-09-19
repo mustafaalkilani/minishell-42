@@ -12,9 +12,6 @@
 
 #include "../path_a.h"
 
-/* The two-character operators are tested before the one-character ones,
-** otherwise ">>" would be read as two separate ">" tokens. len is an out
-** parameter so the caller knows how far to advance. */
 static t_token_type	op_type(const char *s, size_t i, size_t *len)
 {
 	*len = 1;
@@ -35,8 +32,6 @@ static t_token_type	op_type(const char *s, size_t i, size_t *len)
 	return (T_REDIR_OUT);
 }
 
-/* Operator tokens keep their literal text only so the parser can quote
-** it back in "syntax error near unexpected token `|'" messages. */
 t_token	*read_operator(const char *s, size_t *i)
 {
 	t_token_type	type;

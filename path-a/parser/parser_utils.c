@@ -30,9 +30,6 @@ t_cmd	*cmd_new(void)
 	return (cmd);
 }
 
-/* argv grows by full reallocation each time. A command line has a
-** handful of arguments, so the quadratic cost is irrelevant and this
-** avoids tracking a capacity field. Takes ownership of value. */
 int	cmd_add_arg(t_cmd *cmd, char *value)
 {
 	char	**grown;

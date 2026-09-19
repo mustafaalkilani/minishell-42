@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env_export.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: malkilan <malkilan@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rabdalqa <rabdalqa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/09/06 17:06:53 by malkilan          #+#    #+#             */
-/*   Updated: 2026/09/06 19:08:17 by malkilan         ###   ########.fr       */
+/*   Created: 2026/09/06 17:06:53 by rabdalqa          #+#    #+#             */
+/*   Updated: 2026/09/06 19:08:17 by rabdalqa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,6 @@ static char	*make_pair(t_env *node)
 	return (pair);
 }
 
-/* Variables declared without a value (`export X`) are skipped: bash
-** lists them in export output but does not pass them to children. */
 static int	env_export_count(t_env *env)
 {
 	int	n;
@@ -41,8 +39,6 @@ static int	env_export_count(t_env *env)
 	return (n);
 }
 
-/* Rebuilt on every execve rather than cached, because export/unset can
-** change the environment between two commands. */
 char	**env_to_envp(t_env *env)
 {
 	char	**envp;
@@ -69,9 +65,6 @@ char	**env_to_envp(t_env *env)
 	return (envp);
 }
 
-/* Accepts a full "KEY", "KEY=VALUE" or "KEY+=VALUE" string and validates
-** only the key part. Identifier rules are the same as C: no leading
-** digit, letters, digits and underscore only. */
 int	env_key_is_valid(const char *key)
 {
 	int	i;
@@ -92,8 +85,6 @@ int	env_key_is_valid(const char *key)
 	return (1);
 }
 
-/* KEY+=VALUE keeps whatever KEY already held and adds to it, so the key
-** stops one character earlier and the old value seeds the new one. */
 int	env_append(t_env **env, char *key, const char *add)
 {
 	char	*old;

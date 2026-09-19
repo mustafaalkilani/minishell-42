@@ -3,18 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_export.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: malkilan <malkilan@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rabdalqa <rabdalqa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/08/14 18:47:45 by malkilan          #+#    #+#             */
-/*   Updated: 2026/08/14 23:06:37 by malkilan         ###   ########.fr       */
+/*   Created: 2026/08/14 18:47:45 by rabdalqa          #+#    #+#             */
+/*   Updated: 2026/08/14 23:06:37 by rabdalqa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../path_b.h"
 
-/* A leading argument starting with '-' is read as an option flag, and we
-** support none, so bash aborts the builtin with 2 rather than treating
-** it as a name. The offending flag is echoed back as its first letter. */
 static int	invalid_option(const char *arg)
 {
 	char	opt[3];
@@ -30,8 +27,6 @@ static int	invalid_option(const char *arg)
 	return (1);
 }
 
-/* An invalid identifier does not abort the whole builtin: bash reports
-** each bad name, keeps processing the rest, and exits 1 overall. */
 int	builtin_export(char **argv, t_shell *sh)
 {
 	int	i;

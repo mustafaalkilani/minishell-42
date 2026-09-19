@@ -3,17 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_export_list.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: malkilan <malkilan@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rabdalqa <rabdalqa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/08/26 12:04:49 by malkilan          #+#    #+#             */
-/*   Updated: 2026/08/26 20:15:12 by malkilan         ###   ########.fr       */
+/*   Created: 2026/08/26 12:04:49 by rabdalqa          #+#    #+#             */
+/*   Updated: 2026/08/26 20:15:12 by rabdalqa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../path_b.h"
 
-/* A variable declared but never assigned prints without the ="..." part,
-** which is how bash distinguishes `export X` from `export X=`. */
 static void	print_declare(t_env *node)
 {
 	ft_putstr_fd("declare -x ", STDOUT_FILENO);
@@ -40,8 +38,6 @@ static int	env_size(t_env *env)
 	return (n);
 }
 
-/* Bubble sort over an array of pointers. Sorting the array instead of
-** the list keeps insertion order intact for `env`, which is unsorted. */
 static void	sort_env_array(t_env **arr, int n)
 {
 	int		i;

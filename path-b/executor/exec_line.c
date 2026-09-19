@@ -3,17 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   exec_line.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: malkilan <malkilan@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rabdalqa <rabdalqa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/08/29 20:53:29 by malkilan          #+#    #+#             */
-/*   Updated: 2026/09/02 17:58:25 by malkilan         ###   ########.fr       */
+/*   Created: 2026/08/29 20:53:29 by rabdalqa          #+#    #+#             */
+/*   Updated: 2026/09/02 17:58:25 by rabdalqa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../path_b.h"
 
-/* Every fd this child does not need must be closed, otherwise the write
-** end of a pipe stays open somewhere and the reader never sees EOF. */
 static void	pipeline_child(t_cmd *cmd, t_shell *sh, t_pipeline *pl)
 {
 	if (pl->prev_read != -1)
@@ -31,8 +29,6 @@ static void	pipeline_child(t_cmd *cmd, t_shell *sh, t_pipeline *pl)
 	child_exec(cmd, sh);
 }
 
-/* The parent hands the read end forward to the next iteration and drops
-** everything else immediately, for the same EOF reason. */
 static void	pipeline_parent(t_cmd *cmd, t_pipeline *pl)
 {
 	if (pl->prev_read != -1)
@@ -70,9 +66,6 @@ static int	run_pipeline(t_cmd *cmds, t_shell *sh)
 	return (wait_for_all(pl.last_pid));
 }
 
-/* A lone builtin runs in the shell process so that cd, export and unset
-** can actually change its state. stdin and stdout are saved around the
-** call because its redirections must not outlive the command. */
 static int	run_parent_builtin(t_cmd *cmd, t_shell *sh)
 {
 	int	saved_in;

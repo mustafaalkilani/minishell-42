@@ -12,9 +12,6 @@
 
 #include "../path_a.h"
 
-/* A word is "quoted" if a quote delimiter appeared anywhere in its raw
-** text. The surviving characters cannot answer this, because '' and ""
-** leave nothing behind yet still produce an argument bash keeps. */
 static int	scan_had_quotes(const char *s, size_t start, size_t end)
 {
 	while (start < end)
@@ -26,9 +23,6 @@ static int	scan_had_quotes(const char *s, size_t start, size_t end)
 	return (0);
 }
 
-/* Measure-then-fill avoids any buffer growth logic. A length of 0 with a
-** consumed range is legitimate: it is the empty word produced by "" or
-** '', which bash keeps as an argument. */
 static t_token	*read_word(const char *s, size_t *i)
 {
 	size_t	end;
@@ -69,8 +63,6 @@ static t_token	*next_token(const char *input, size_t *i)
 	return (tok);
 }
 
-/* Returns NULL both for an all-blank line and for a syntax error. main()
-** filters blank lines beforehand so the distinction never matters. */
 t_token	*lex(const char *input)
 {
 	t_token	*head;

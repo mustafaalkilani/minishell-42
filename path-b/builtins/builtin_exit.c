@@ -3,18 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_exit.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: malkilan <malkilan@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rabdalqa <rabdalqa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/08/05 22:36:43 by malkilan          #+#    #+#             */
-/*   Updated: 2026/08/08 15:45:12 by malkilan         ###   ########.fr       */
+/*   Created: 2026/08/05 22:36:43 by rabdalqa          #+#    #+#             */
+/*   Updated: 2026/08/08 15:45:12 by rabdalqa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../path_b.h"
 
-/* bash validates the argument with strtol, which skips leading blanks,
-** then accepts only blanks after the digits. So `exit " 42 "` is 42
-** while `exit "42 x"` is a numeric-argument error. */
 static const char	*skip_blanks(const char *s)
 {
 	while (*s == ' ' || (*s >= '\t' && *s <= '\r'))
@@ -37,9 +34,6 @@ static int	is_numeric_arg(const char *s)
 	return (*skip_blanks(s + i) == '\0');
 }
 
-/* Overflow is detected before it happens by comparing against the limit
-** divided by ten. bash treats an out-of-range number exactly like a
-** non-numeric one, so both return 0 here. */
 static int	parse_exit_code(const char *s, long long *out)
 {
 	unsigned long long	acc;
@@ -69,9 +63,6 @@ static int	parse_exit_code(const char *s, long long *out)
 	return (1);
 }
 
-/* Frees everything the shell owns before leaving, so valgrind stays
-** quiet about our own allocations. readline's internal buffers are the
-** documented exception the subject allows. */
 static void	shell_cleanup(t_shell *sh)
 {
 	free(sh->current_line);
@@ -83,8 +74,6 @@ static void	shell_cleanup(t_shell *sh)
 	rl_clear_history();
 }
 
-/* "exit 1 2" is the one case that does not exit: bash reports the error,
-** returns 1 and keeps the shell alive. */
 int	builtin_exit(char **argv, t_shell *sh)
 {
 	long long	code;

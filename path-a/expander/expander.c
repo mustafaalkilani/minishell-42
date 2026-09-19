@@ -12,9 +12,6 @@
 
 #include "../path_a.h"
 
-/* value and quotes point at the '$'. A name that does not start a valid
-** identifier leaves the $ as a literal character, exactly like bash.
-** Returns how many characters of the word were consumed. */
 static size_t	append_named(t_exp *e, const char *value, const char *quotes,
 		char flag)
 {
@@ -38,10 +35,6 @@ static size_t	append_named(t_exp *e, const char *value, const char *quotes,
 	return (1 + (size_t)len);
 }
 
-/* Consumes one $-expansion and advances i past it. Four cases: $? is
-** shell state, ${NAME} is a braced lookup, a bare name is looked up in
-** env, and a $ before a quote is dropped. What the variable produced is
-** marked splittable only when the $ itself was unquoted. */
 static void	append_var(t_exp *e, const char *value, size_t *i,
 		const char *quotes)
 {
@@ -66,12 +59,6 @@ static void	append_var(t_exp *e, const char *value, size_t *i,
 		*i += append_named(e, value + *i, quotes + *i, flag);
 }
 
-/* Walks the word copying literal runs and substituting variables. The
-** quotes array decides expansion: inside single quotes a $ is data, in
-** double quotes and unquoted text it introduces a variable. Literal
-** runs are never splittable, because the lexer already ended the word
-** at any unquoted whitespace. tilde is off for heredoc bodies, where
-** bash leaves a leading ~ alone. */
 static t_exp	expand_masked(const char *value, const char *quotes,
 		t_shell *sh, int tilde)
 {
@@ -101,8 +88,6 @@ static t_exp	expand_masked(const char *value, const char *quotes,
 	return (e);
 }
 
-/* A heredoc body is expanded but never split into fields, so its mask is
-** thrown away. This is the only entry point path-b needs. */
 char	*expand_word(const char *value, const char *quotes, t_shell *sh)
 {
 	t_exp	e;
@@ -112,9 +97,6 @@ char	*expand_word(const char *value, const char *quotes, t_shell *sh)
 	return (e.out);
 }
 
-/* Heredoc delimiters are deliberately skipped: bash does not expand the
-** delimiter itself, and whether it was quoted decides if the heredoc
-** body gets expanded later, which the parser records separately. */
 int	expand(t_token *tokens, t_shell *sh)
 {
 	t_token	*prev;

@@ -3,32 +3,25 @@
 /*                                                        :::      ::::::::   */
 /*   redir_heredoc.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: malkilan <malkilan@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rabdalqa <rabdalqa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/08/19 20:31:35 by malkilan          #+#    #+#             */
-/*   Updated: 2026/08/22 18:31:28 by malkilan         ###   ########.fr       */
+/*   Created: 2026/08/19 20:31:35 by rabdalqa          #+#    #+#             */
+/*   Updated: 2026/08/22 18:31:28 by rabdalqa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../path_b.h"
 
-/* The delimiter must match the whole line, so "EOF" ends the heredoc but
-** "EOFX" or " EOF" do not. */
 static int	delim_matches(const char *line, const char *delim)
 {
 	return (!ft_strncmp(line, delim, ft_strlen(delim) + 1));
 }
 
-/* The "> " continuation prompt only belongs on a terminal; read_input_line
-** suppresses it and avoids readline's echo when input is piped in. */
 static char	*heredoc_readline(void)
 {
 	return (read_input_line("> "));
 }
 
-/* A quoted delimiter (<<"EOF") keeps the body literal. Otherwise every
-** line is expanded with the same rules as an unquoted word, which is why
-** a zeroed quotes array is passed: no character is inside quotes. */
 static void	write_heredoc_line(int fd, char *line, t_redir *redir, t_shell *sh)
 {
 	char	*out;
@@ -49,9 +42,6 @@ static void	write_heredoc_line(int fd, char *line, t_redir *redir, t_shell *sh)
 	free(out);
 }
 
-/* The body is buffered into a pipe rather than a temp file, so nothing
-** has to be cleaned up from disk. ctrl-C during the read closes stdin,
-** which makes readline return NULL and lets us abandon the whole line. */
 static int	read_heredoc(t_redir *redir, t_shell *sh)
 {
 	int		fds[2];
@@ -79,9 +69,6 @@ static int	read_heredoc(t_redir *redir, t_shell *sh)
 	return (0);
 }
 
-/* All heredocs in the line are drained before anything forks, because
-** they read from the terminal and only one reader can own it at a time.
-** stdin is saved so an interrupted heredoc leaves the shell usable. */
 int	collect_heredocs(t_cmd *cmds, t_shell *sh)
 {
 	t_redir	*redir;

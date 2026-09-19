@@ -3,17 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   exec_wait.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: malkilan <malkilan@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rabdalqa <rabdalqa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/08/12 13:56:06 by malkilan          #+#    #+#             */
-/*   Updated: 2026/08/13 13:38:13 by malkilan         ###   ########.fr       */
+/*   Created: 2026/08/12 13:56:06 by rabdalqa          #+#    #+#             */
+/*   Updated: 2026/08/13 13:38:13 by rabdalqa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../path_b.h"
 
-/* A command killed by a signal reports 128+signum. ctrl-C therefore
-** yields 130 and ctrl-\ yields 131, matching bash. */
 int	status_to_exit(int status)
 {
 	if (WIFSIGNALED(status))
@@ -23,8 +21,6 @@ int	status_to_exit(int status)
 	return (EXIT_OK);
 }
 
-/* Prints the newline or message the terminal would otherwise miss when
-** a foreground child dies from a signal, so the next prompt lines up. */
 static void	report_signal(int status)
 {
 	int	sig;
@@ -38,9 +34,6 @@ static void	report_signal(int status)
 		write(STDOUT_FILENO, "Quit (core dumped)\n", 19);
 }
 
-/* Reaps every child but only the last one decides $?, which is the
-** pipeline semantics bash uses. Waiting for all of them prevents
-** zombies even when an early command exits first. */
 int	wait_for_all(pid_t last_pid)
 {
 	int		status;

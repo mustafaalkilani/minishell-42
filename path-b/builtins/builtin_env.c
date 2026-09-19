@@ -3,18 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_env.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: malkilan <malkilan@student.42.fr>          +#+  +:+       +#+        */
+/*   By: rabdalqa <rabdalqa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2026/08/05 18:15:08 by malkilan          #+#    #+#             */
-/*   Updated: 2026/08/05 19:49:23 by malkilan         ###   ########.fr       */
+/*   Created: 2026/08/05 18:15:08 by rabdalqa          #+#    #+#             */
+/*   Updated: 2026/08/05 19:49:23 by rabdalqa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../path_b.h"
 
-/* The subject restricts env to no options and no arguments, so anything
-** extra is refused rather than trying to emulate `env VAR=x cmd`.
-** Variables without a value are skipped, matching real env output. */
 int	builtin_env(char **argv, t_shell *sh)
 {
 	t_env	*cur;
